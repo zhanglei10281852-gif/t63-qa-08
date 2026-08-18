@@ -24,10 +24,8 @@ func (c Checker) Run(ctx context.Context) ([]Result, error) {
 	if timeout <= 0 {
 		timeout = 2 * time.Second
 	}
-	detachedCtx := context.WithoutCancel(ctx)
-	checkCtx, cancelCheck := context.WithTimeout(detachedCtx, timeout)
-	defer cancelCheck()
-	ctx = checkCtx
+	ctx, cancel := context.WithTimeout(ctx, timeout)
+	defer cancel()
 	results := make([]Result, 0, len(c.Checks))
 	channel := make(chan Result, len(c.Checks))
 	var group sync.WaitGroup
